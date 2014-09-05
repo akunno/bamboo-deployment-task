@@ -1,0 +1,2 @@
+[@ww.textfield labelKey="com.atlassian.bamboo.plugins.deployment.releaser.releaseVersion" name="releaseVersion" required='true'/]
+[@ww.textfield labelKey="com.atlassian.bamboo.plugins.deployment.releaser.environment" name="environment" required='true'/]

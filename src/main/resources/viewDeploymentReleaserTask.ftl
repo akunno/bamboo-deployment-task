@@ -1,0 +1,2 @@
+[@ww.label labelKey="com.atlassian.bamboo.plugins.deployment.releaser.releaseVersion" name="releaseVersion"/]
+[@ww.label labelKey="com.atlassian.bamboo.plugins.deployment.releaser.environment" name="environment"/]
