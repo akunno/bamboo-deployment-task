@@ -7,7 +7,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>net.akunno.bamboo.deployer</groupId>
     <artifactId>deploymentReleaser</artifactId>
-    <version>1.2.4</version>
+    <version>1.2.5</version>
 
     <organization>
         <name>Michael Blake</name>

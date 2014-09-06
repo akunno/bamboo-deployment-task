@@ -113,11 +113,11 @@ public class DeploymentTask implements TaskType {
                         buildLogger.addBuildLogEntry("Build State unknown, waiting");
                         Thread.sleep(5000);
                         //bambooDeploymentExecutionService.processDeploymentResult(deploymentContext);
-                        CurrentResult currentResult = deploymentContext.getCurrentResult();
+                        //CurrentResult currentResult = deploymentContext.getCurrentResult();
                         DeploymentResult result = ComponentAccessor.DEPLOYMENT_RESULT_SERVICE.get().getDeploymentResult(deploymentContext.getDeploymentResultId());
                         buildState = result.getDeploymentState();
                         buildLogger.addBuildLogEntry("Deployment completed - state = " + buildState);
-                        buildLogger.addBuildLogEntry("Current Result - state = " + currentResult.getBuildState());
+                        //buildLogger.addBuildLogEntry("Current Result - state = " + currentResult.getBuildState());
                     } while(buildState == BuildState.UNKNOWN);
                     
                     if (buildState == BuildState.FAILED) {
