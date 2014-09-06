@@ -107,13 +107,21 @@ public class DeploymentTask implements TaskType {
                     bambooDeploymentExecutionService.execute(deploymentContext);
 
                     waitForDeploymentsToComplete(environment);  
-                    DeploymentResult result = ComponentAccessor.DEPLOYMENT_RESULT_SERVICE.get().getDeploymentResult(deploymentContext.getDeploymentResultId());
                     
-                    bambooDeploymentExecutionService.processDeploymentResult(deploymentContext);
-                    //CurrentResult result = deploymentContext.getCurrentResult();
-                    BuildState buildState = result.getDeploymentState();
-                    if (buildState == BuildState.FAILED || buildState == BuildState.UNKNOWN) {
-                        throw new DeploymentException("Deployment marked as failed or unknown. Failing build as well.");
+                    BuildState buildState;
+                    do {
+                        buildLogger.addBuildLogEntry("Build State unknown, waiting");
+                        Thread.sleep(5000);
+                        bambooDeploymentExecutionService.processDeploymentResult(deploymentContext);
+                        CurrentResult currentResult = deploymentContext.getCurrentResult();
+                        DeploymentResult result = ComponentAccessor.DEPLOYMENT_RESULT_SERVICE.get().getDeploymentResult(deploymentContext.getDeploymentResultId());
+                        buildState = result.getDeploymentState();
+                        buildLogger.addBuildLogEntry("Deployment completed - state = " + buildState);
+                        buildLogger.addBuildLogEntry("Current Result - state = " + currentResult.getBuildState());
+                    } while(buildState == BuildState.UNKNOWN);
+                    
+                    if (buildState == BuildState.FAILED) {
+                        throw new DeploymentException("Deployment marked as failed. Failing build as well.");
                     }
                     
                 }
