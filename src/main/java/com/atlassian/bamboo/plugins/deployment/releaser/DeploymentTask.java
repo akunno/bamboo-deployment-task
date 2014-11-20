@@ -58,8 +58,13 @@ public class DeploymentTask implements TaskType {
         DeploymentProjectService deploymentProjectService = ComponentAccessor.DEPLOYMENT_PROJECT_SERVICE.get();
         List<Environment> deploymentTargets = new ArrayList<Environment>();
         //for (String artifactsPlan : parentPlans) {
-            buildLogger.addBuildLogEntry("Parent Plan found for this plan: " + plan);
-            List<DeploymentProject> deploymentProjects = deploymentProjectService.getDeploymentProjectsRelatedToPlan(plan.getPlanKey());
+            List<DeploymentProject> deploymentProjects;
+            boolean isBranchPlan = (plan.getMaster() != null);
+            if (isBranchPlan) {
+                deploymentProjects = deploymentProjectService.getDeploymentProjectsRelatedToPlan(plan.getMaster().getPlanKey());
+            } else {
+                deploymentProjects = deploymentProjectService.getDeploymentProjectsRelatedToPlan(plan.getPlanKey());
+            }
             buildLogger.addBuildLogEntry("Deployment Projects relating to this plan: " + deploymentProjects.size());
             for (DeploymentProject deploymentProject : deploymentProjects) {
                 buildLogger.addBuildLogEntry("Deployment Project: " + deploymentProject.getName());
