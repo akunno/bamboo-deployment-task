@@ -90,13 +90,20 @@ public class DeploymentTask implements TaskType {
                 if (environment.getName().equals(environmentKey)) {
                     buildLogger.addBuildLogEntry("Trigger deployment " + dependencyParentKey);
                     waitForDeploymentsToComplete(environment);
+                    com.atlassian.bamboo.deployments.execution.service.DeploymentExecutionService bambooDeploymentExecutionService = ComponentAccessor.DEPLOYMENT_EXECUTION_SERVICE.get();
                     
                     DeploymentProject parentProject = ComponentAccessor.DEPLOYMENT_PROJECT_SERVICE.get().getDeploymentProjectForEnvironment(environment.getId());
-                    DeploymentVersion deploymentVersion = deploymentVersionService.createDeploymentVersion(parentProject.getId(), dependencyParentKey);
-                    com.atlassian.bamboo.deployments.execution.service.DeploymentExecutionService bambooDeploymentExecutionService = ComponentAccessor.DEPLOYMENT_EXECUTION_SERVICE.get();
-                    //bambooDeploymentExecutionService.isEnvironmentBeingDeployedTo(environmentId)
+                    DeploymentVersion deploymentVersion = deploymentVersionService.getDeploymentVersionByName(releaseVersion, parentProject.getId());
                     TriggerReason buildTriggerReason = taskContext.getBuildContext().getTriggerReason();
-                    deploymentVersionService.renameVersion(parentProject.getId(), deploymentVersion, releaseVersion);
+                    
+                    if (deploymentVersion == null) {
+                        buildLogger.addBuildLogEntry("Deployment version " + releaseVersion + " does not already exist");
+                        deploymentVersion = deploymentVersionService.createDeploymentVersion(parentProject.getId(), dependencyParentKey);
+                        deploymentVersionService.renameVersion(parentProject.getId(), deploymentVersion, releaseVersion);
+                    } else {
+                        buildLogger.addBuildLogEntry("Deployment version " + releaseVersion + " already exists");
+                    }
+                    
                     DeploymentContext deploymentContext = bambooDeploymentExecutionService.prepareDeploymentContext(environment, deploymentVersion, buildTriggerReason);
                     bambooDeploymentExecutionService.execute(deploymentContext);
 
@@ -122,7 +129,7 @@ public class DeploymentTask implements TaskType {
            }
            builder.success();
         } catch(Exception e) {
-            buildLogger.addErrorLogEntry(e.getMessage(), e);
+            buildLogger.addErrorLogEntry("Deployment failed error: " + e.getMessage(), e);
         }
         
         return builder.build();
@@ -130,13 +137,13 @@ public class DeploymentTask implements TaskType {
 
     private void waitForDeploymentsToComplete(Environment environment) {
         com.atlassian.bamboo.deployments.execution.service.DeploymentExecutionService atlassianExecutionService = ComponentAccessor.DEPLOYMENT_EXECUTION_SERVICE.get();
-        while(atlassianExecutionService.isEnvironmentBeingDeployedTo(environment.getId())) {
+        do {
             try {
                 buildLogger.addBuildLogEntry("Deployment already in progress - delaying 5 seconds");
                 Thread.sleep(5000);
             } catch (InterruptedException e) {
-                buildLogger.addErrorLogEntry(e.getMessage(), e);
+                buildLogger.addErrorLogEntry("Waiting for deployment error: " + e.getMessage(), e);
             }
-        }
+        } while(atlassianExecutionService.isEnvironmentBeingDeployedTo(environment.getId()));
     }
 }
