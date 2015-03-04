@@ -2,12 +2,9 @@ package com.atlassian.bamboo.plugins.deployment.releaser;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.jetbrains.annotations.NotNull;
 
-import com.atlassian.bamboo.build.Job;
-import com.atlassian.bamboo.build.PlanDependencyManager;
 import com.atlassian.bamboo.build.logger.BuildLogger;
 import com.atlassian.bamboo.builder.BuildState;
 import com.atlassian.bamboo.deployments.DeploymentException;
@@ -16,26 +13,18 @@ import com.atlassian.bamboo.deployments.execution.DeploymentContext;
 import com.atlassian.bamboo.deployments.projects.DeploymentProject;
 import com.atlassian.bamboo.deployments.projects.service.DeploymentProjectService;
 import com.atlassian.bamboo.deployments.results.DeploymentResult;
-import com.atlassian.bamboo.deployments.results.service.DeploymentResultService;
 import com.atlassian.bamboo.deployments.versions.DeploymentVersion;
 import com.atlassian.bamboo.deployments.versions.service.DeploymentVersionService;
 import com.atlassian.bamboo.plan.Plan;
-import com.atlassian.bamboo.plan.PlanKeys;
 import com.atlassian.bamboo.plan.PlanResultKey;
 import com.atlassian.bamboo.spring.ComponentAccessor;
-import com.atlassian.bamboo.task.BuildTaskRequirementSupport;
 import com.atlassian.bamboo.task.TaskContext;
-import com.atlassian.bamboo.task.TaskDefinition;
 import com.atlassian.bamboo.task.TaskException;
 import com.atlassian.bamboo.task.TaskResult;
 import com.atlassian.bamboo.task.TaskResultBuilder;
 import com.atlassian.bamboo.task.TaskType;
-import com.atlassian.bamboo.v2.build.CurrentResult;
 import com.atlassian.bamboo.v2.build.agent.capability.CapabilityDefaultsHelper;
-import com.atlassian.bamboo.v2.build.agent.capability.Requirement;
-import com.atlassian.bamboo.v2.build.agent.capability.RequirementImpl;
 import com.atlassian.bamboo.v2.build.trigger.TriggerReason;
-import com.google.common.collect.Sets;
 
 public class DeploymentTask implements TaskType {
     public static final String RELEASE_VERSION_CONFIG_KEY = "releaseVersion";
